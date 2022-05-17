@@ -19,7 +19,7 @@ from .formatter import (
     profile_embed,
 )
 from .generator import Generator
-from .menus import menu, DEFAULT_CONTROLS
+from .menus import bmenu
 
 log = logging.getLogger("red.vrt.levelup.commands")
 
@@ -48,7 +48,7 @@ class UserCommands(commands.Cog):
             return
         try:
             # Try running it through profile generator blind to see if it errors
-            args = {'bg_image': image_url, 'profile_image': ctx.author.avatar_url}
+            args = {'bg_image': image_url, 'profile_image': ctx.author.avatar.url}
             await self.gen_profile_img(args)
         except Exception as e:
             if "cannot identify image file" in str(e):
@@ -124,7 +124,7 @@ class UserCommands(commands.Cog):
         color = hex_to_rgb(color)
         args = {
             'bg_image': banner,
-            'profile_image': user.avatar_url,
+            'profile_image': user.avatar.url,
             'level': 69,
             'color': color,
         }
@@ -261,7 +261,9 @@ class UserCommands(commands.Cog):
         user_id = str(user.id)
         if user_id not in users:
             return await ctx.send("No information available yet!")
-        pfp = user.avatar_url
+        pfp = None
+        if user.avatar:
+            pfp = user.avatar.url
         pos = await get_user_position(conf, user_id)
         position = "{:,}".format(pos["p"])  # int format
         percentage = pos["pr"]  # Float
@@ -493,7 +495,7 @@ class UserCommands(commands.Cog):
                 description=f"{title}{box(msg, lang='python')}",
                 color=discord.Color.random()
             )
-            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_thumbnail(url=ctx.guild.icon.url)
             if you:
                 embed.set_footer(text=f"Pages {p + 1}/{pages} ｜ {you}")
             else:
@@ -506,7 +508,7 @@ class UserCommands(commands.Cog):
                 embed = embeds[0]
                 await ctx.send(embed=embed)
             else:
-                await menu(ctx, embeds, DEFAULT_CONTROLS)
+                await bmenu(ctx, embeds)
         else:
             return await ctx.send("No user data yet!")
 
@@ -561,7 +563,7 @@ class UserCommands(commands.Cog):
                 description=f"{title}{box(data, lang='python')}",
                 color=discord.Color.random()
             )
-            embed.set_thumbnail(url=ctx.guild.icon_url)
+            embed.set_thumbnail(url=ctx.guild.icon.url)
             if you:
                 embed.set_footer(text=f"Pages {p + 1}/{pages} ｜ {you}")
             else:
@@ -574,6 +576,6 @@ class UserCommands(commands.Cog):
                 embed = embeds[0]
                 await ctx.send(embed=embed)
             else:
-                await menu(ctx, embeds, DEFAULT_CONTROLS)
+                await bmenu(ctx, embeds)
         else:
             return await ctx.send("No user data yet!")

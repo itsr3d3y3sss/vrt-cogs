@@ -179,7 +179,8 @@ async def profile_embed(
         color=user.colour
     )
     embed.add_field(name="Progress", value=box(f"{lvlbar} {lvlpercent} %", lang="python"))
-    embed.set_thumbnail(url=user.avatar_url)
+    if user.avatar:
+        embed.set_thumbnail(url=user.avatar.url)
     if position:
         embed.set_footer(text=f"Rank {position}, with {percentage}% of global server XP")
     return embed

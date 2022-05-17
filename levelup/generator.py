@@ -4,7 +4,6 @@ import os
 from io import BytesIO
 from math import sqrt
 
-import PIL
 import aiohttp
 import colorgram
 from PIL import Image, ImageDraw, ImageFont
@@ -31,7 +30,7 @@ class Generator:
     async def generate_profile(
             self,
             bg_image: str = None,
-            profile_image: str = "https://imgur.com/qvFlyiZ",
+            profile_image: str = None,
             level: int = 1,
             current_xp: int = 0,
             user_xp: int = 0,
@@ -151,14 +150,12 @@ class Generator:
         card.paste(circle_img, (19, 19), circle_img)
 
         # get profile pic
-        pfp_image = await self.get_image_content_from_url(str(profile_image))
-        if pfp_image:
-            profile_bytes = BytesIO(pfp_image)
-            profile = Image.open(profile_bytes)
+        if not profile_image:
+            profile = Image.open(self.default_pfp).convert("RGBA")
         else:
-            profile = Image.open(self.default_pfp)
-
-        profile = profile.convert('RGBA').resize((180, 180), Image.LANCZOS)
+            profile_bytes = BytesIO(await self.get_image_content_from_url(str(profile_image)))
+            profile = Image.open(profile_bytes)
+        profile = profile.convert('RGBA').resize((180, 180), Image.ANTIALIAS)
 
         # Mask to crop profile pic image to a circle
         # draw at 4x size and resample down to 1x for a nice smooth circle
@@ -249,9 +246,12 @@ class Generator:
         draw.text((73, 16), level, MAINCOLOR, font=font_normal)
 
         # get profile pic
-        profile_bytes = BytesIO(await self.get_image_content_from_url(str(profile_image)))
-        profile = Image.open(profile_bytes)
-        profile = profile.convert('RGBA').resize((60, 60), Image.LANCZOS)
+        if not profile_image:
+            profile = Image.open(self.default_pfp).convert("RGBA")
+        else:
+            profile_bytes = BytesIO(await self.get_image_content_from_url(str(profile_image)))
+            profile = Image.open(profile_bytes)
+        profile = profile.convert('RGBA').resize((60, 60), Image.ANTIALIAS)
 
         # Mask to crop profile image
         # draw at 4x size and resample down to 1x for a nice smooth circle

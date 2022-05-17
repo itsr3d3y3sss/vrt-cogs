@@ -41,7 +41,7 @@ LOADING = "https://i.imgur.com/l3p6EMX.gif"
 class LevelUp(UserCommands, commands.Cog):
     """Local Discord Leveling System"""
     __author__ = "Vertyco#0117"
-    __version__ = "1.1.19"
+    __version__ = "2.1.5"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)
@@ -184,6 +184,10 @@ class LevelUp(UserCommands, commands.Cog):
         member = guild.get_member(int(user))
         if not member:
             return
+        if member.avatar:
+            pfp = member.avatar.url
+        else:
+            pfp = None
         mentionuser = member.mention
         name = member.name
         # Send levelup messages
@@ -193,7 +197,6 @@ class LevelUp(UserCommands, commands.Cog):
             if channel:
                 channel = guild.get_channel(channel)
                 color = member.colour
-                pfp = member.avatar_url
                 embed = discord.Embed(
                     description=f"**Just reached level {new_level}!**",
                     color=color
@@ -220,7 +223,7 @@ class LevelUp(UserCommands, commands.Cog):
             color = hex_to_rgb(color)
             args = {
                 'bg_image': banner,
-                'profile_image': member.avatar_url,
+                'profile_image': pfp,
                 'level': new_level,
                 'color': color,
             }
@@ -1347,7 +1350,7 @@ class LevelUp(UserCommands, commands.Cog):
         color = hex_to_rgb(color)
         args = {
             'bg_image': banner,
-            'profile_image': user.avatar_url,
+            'profile_image': user.avatar.url,
             'level': 69,
             'color': color,
         }
