@@ -182,7 +182,10 @@ class UserCommands(commands.Cog):
             if user_id not in users:
                 return await ctx.send("You have no information stored about your account yet. Talk for a bit first")
             user = users[user_id]
-            rgb = hex_to_rgb(hex_color)
+            try:
+                rgb = hex_to_rgb(hex_color)
+            except ValueError:
+                return await ctx.send("That is an invalid color, please use a valid integer color code or hex color.")
             try:
                 embed = discord.Embed(
                     description="This is the color you chose",
@@ -250,8 +253,11 @@ class UserCommands(commands.Cog):
     @commands.guild_only()
     async def get_profile(self, ctx: commands.Context, *, user: discord.Member = None):
         """View your profile"""
+        can_send_attachments = ctx.channel.permissions_for(ctx.guild.me).attach_files
         conf = await self.config.guild(ctx.guild).all()
         usepics = conf["usepics"]
+        if usepics and not can_send_attachments:
+            return await ctx.send("I don't have permission to send attachments to this channel.")
         users = conf["users"]
         mention = conf["mention"]
         if not user:
@@ -355,6 +361,9 @@ class UserCommands(commands.Cog):
                 try:
                     await ctx.reply(file=file, mention_author=mention)
                 except discord.HTTPException:
+                    await ctx.send(file=file)
+                except Exception as e:
+                    log.warning(f"Error sending generated profile: {e}")
                     await ctx.send(file=file)
 
     @commands.command(name="prestige")
