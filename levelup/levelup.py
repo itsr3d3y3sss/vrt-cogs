@@ -35,7 +35,7 @@ LOADING = "https://i.imgur.com/l3p6EMX.gif"
 # CREDITS
 # Thanks aikaterna#1393 and epic guy#0715 for the caching advice :)
 # Thanks Fixator10#7133 for having a Leveler cog to get a reference for what kinda settings a leveler cog might need!
-# Thanks crayyy_zee#2900 for showing me the dislash repo that i yoinked and did dirty things to
+# Thanks crayyy_zee#2900 for initially showing me the dislash repo(now removed) that i yoinked and did dirty things to
 # Thanks Zephyrkul#1089 for the help with leaderboard formatting!
 
 class LevelUp(UserCommands, commands.Cog):
