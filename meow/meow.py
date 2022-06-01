@@ -1,6 +1,5 @@
 import random
 
-import discord
 from redbot.core import commands
 
 
@@ -11,7 +10,7 @@ class Meow(commands.Cog):
     My girlfriend had a dream about this cog so I had to make it ¯\_(ツ)_/¯
     """
     __author__ = "Vertyco"
-    __version__ = "0.0.2"
+    __version__ = "1.0.2"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)

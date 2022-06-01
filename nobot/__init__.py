@@ -1,10 +1,11 @@
+import json
+from pathlib import Path
+
 from .nobot import NoBot
 
-___red_end_user_data_statement__ = (
-    "This cog only listens for other bots, it is probably not a good idea to use this on large or public bots."
-)
+with open(Path(__file__).parent / "info.json") as fp:
+    __red_end_user_data_statement__ = json.load(fp)["end_user_data_statement"]
 
 
-def setup(bot):
-    cog = NoBot(bot)
-    bot.add_cog(cog)
+async def setup(bot):
+    bot.add_cog(NoBot(bot))

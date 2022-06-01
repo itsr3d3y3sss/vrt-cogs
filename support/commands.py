@@ -1,26 +1,49 @@
-import asyncio
 from typing import Union
 
 import discord
-from dislash import ButtonStyle, Button, ActionRow
 from redbot.core import commands
 from redbot.core.utils.chat_formatting import box
 
+from .persistview import TestButton
+
 
 class SupportCommands(commands.Cog):
+    async def refresh_button(self, guild_id: int):
+        if guild_id in self.activeguilds:
+            self.activeguilds.remove(guild_id)
+        await self.add_components()
+
+    async def test_button(
+            self,
+            ctx: commands.Context,
+            bcolor: str = None,
+            button_content: str = None,
+            emoji: str = None
+    ):
+        conf = await self.config.guild(ctx.guild).all()
+        if not bcolor:
+            bcolor = conf["bcolor"]
+        if bcolor == "red":
+            style = discord.ButtonStyle.red
+        elif bcolor == "blue":
+            style = discord.ButtonStyle.blurple
+        elif bcolor == "green":
+            style = discord.ButtonStyle.green
+        else:
+            style = discord.ButtonStyle.grey
+        if not button_content:
+            button_content = conf["button_content"]
+        if not emoji:
+            emoji = conf["emoji"]
+        butt = TestButton(style, button_content, emoji)  # hehe, butt
+        await ctx.send("This is what your button now looks like!", view=butt)
+
     @commands.group(name="supportset", aliases=["sset"])
     @commands.guild_only()
     @commands.admin()
     async def support(self, ctx: commands.Context):
         """Base support settings"""
         pass
-
-    # Check running button tasks and update guild task if exists
-    async def refresh_tasks(self, guild_id: str):
-        for task in asyncio.all_tasks():
-            if guild_id == task.get_name():
-                task.cancel()
-                await self.add_components()
 
     @support.command(name="view")
     async def view_settings(self, ctx: commands.Context):
@@ -123,7 +146,7 @@ class SupportCommands(commands.Cog):
         await self.config.guild(ctx.guild).message_id.set(message_id.id)
         await self.config.guild(ctx.guild).channel_id.set(message_id.channel.id)
         await ctx.send("Support ticket message has been set!")
-        await self.refresh_tasks(str(ctx.guild.id))
+        await self.refresh_button(ctx.guild.id)
 
     @support.command(name="ticketmessage")
     async def set_support_ticket_message(self, ctx: commands.Context, *, message: str):
@@ -191,9 +214,13 @@ class SupportCommands(commands.Cog):
     async def set_button_content(self, ctx: commands.Context, *, button_content: str):
         """Set what you want the support button to say"""
         if len(button_content) <= 80:
+            try:
+                await self.test_button(ctx, button_content=button_content)
+            except Exception as e:
+                return await ctx.send(f"Failed to create test button. Error:\n{box(str(e), lang='python')}")
             await self.config.guild(ctx.guild).button_content.set(button_content)
             await ctx.tick()
-            await self.refresh_tasks(str(ctx.guild.id))
+            await self.refresh_button(ctx.guild.id)
         else:
             await ctx.send("Button content is too long! Must be less than 80 characters")
 
@@ -204,9 +231,13 @@ class SupportCommands(commands.Cog):
         valid = ["red", "blue", "green", "grey", "gray"]
         if c not in valid:
             return await ctx.send("That is not a valid color, must be red, blue, green, or grey")
+        try:
+            await self.test_button(ctx, bcolor=button_color)
+        except Exception as e:
+            return await ctx.send(f"Failed to create test button. Error:\n{box(str(e), lang='python')}")
         await self.config.guild(ctx.guild).bcolor.set(c)
         await ctx.tick()
-        await self.refresh_tasks(str(ctx.guild.id))
+        await self.refresh_button(ctx.guild.id)
 
     @support.command(name="buttonemoji")
     async def set_button_emoji(self, ctx: commands.Context, emoji: Union[discord.Emoji, discord.PartialEmoji, str]):
@@ -215,35 +246,13 @@ class SupportCommands(commands.Cog):
 
         Currently does NOT support unicode emojis so if using a mobile device, use discord emoji panel
         """
-        conf = await self.config.guild(ctx.guild).all()
-        bcolor = conf["bcolor"]
-        if bcolor == "red":
-            style = ButtonStyle.red
-        elif bcolor == "blue":
-            style = ButtonStyle.blurple
-        elif bcolor == "green":
-            style = ButtonStyle.green
-        else:
-            style = ButtonStyle.grey
-        button_content = conf["button_content"]
-        button = ActionRow(
-            Button(
-                style=style,
-                label=button_content,
-                custom_id=f"{ctx.guild.id}",
-                emoji=str(emoji)
-            )
-        )
         try:
-            await ctx.send("This is what your button now looks like!", components=[button])
+            await self.test_button(ctx, emoji=emoji)
         except Exception as e:
-            if "Invalid emoji" in str(e):
-                return await ctx.send("Unable to use that emoji, try again")
-            else:
-                return await ctx.send(f"Cant use that emoji for some reason\nError: {e}")
+            return await ctx.send(f"Failed to create test button. Error:\n{box(str(e), lang='python')}")
         await self.config.guild(ctx.guild).emoji.set(str(emoji))
         await ctx.tick()
-        await self.refresh_tasks(str(ctx.guild.id))
+        await self.refresh_button(ctx.guild.id)
 
     @support.command(name="tname")
     async def set_def_ticket_name(self, ctx: commands.Context, *, default_name: str):

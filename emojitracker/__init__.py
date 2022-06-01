@@ -1,10 +1,11 @@
+import json
+from pathlib import Path
+
 from .emojitracker import EmojiTracker
 
-___red_end_user_data_statement__ = (
-    "This cog stores Discord ID's."
-)
+with open(Path(__file__).parent / "info.json") as fp:
+    __red_end_user_data_statement__ = json.load(fp)["end_user_data_statement"]
 
 
 async def setup(bot):
-    cog = EmojiTracker(bot)
-    bot.add_cog(cog)
+    await bot.add_cog(EmojiTracker(bot))

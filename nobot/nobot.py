@@ -1,7 +1,7 @@
-import discord
 import asyncio
 import logging
 
+import discord
 from redbot.core import commands, Config
 
 log = logging.getLogger("red.vrt.nobot")
@@ -16,7 +16,7 @@ class NoBot(commands.Cog):
     message, this cog will delete them.
     """
     __author__ = "Vertyco"
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)

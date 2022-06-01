@@ -9,7 +9,7 @@ LOADING = "https://i.imgur.com/l3p6EMX.gif"
 class WarnTransfer(commands.Cog):
     """Transfer WarnSystem data to core"""
     __author__ = "Vertyco#0117"
-    __version__ = "0.0.2"
+    __version__ = "1.0.2"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)

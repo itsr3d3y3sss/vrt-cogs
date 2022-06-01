@@ -12,7 +12,7 @@ class Fluent(commands.Cog):
     Inspired by Obi-Wan3#0003's translation cog.
     """
     __author__ = "Vertyco"
-    __version__ = "1.0.5"
+    __version__ = "1.1.5"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)

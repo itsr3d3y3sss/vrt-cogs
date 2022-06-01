@@ -1,10 +1,11 @@
+import json
+from pathlib import Path
+
 from .warntransfer import WarnTransfer
 
-___red_end_user_data_statement__ = (
-    "This cog does not store any user data"
-)
+with open(Path(__file__).parent / "info.json") as fp:
+    __red_end_user_data_statement__ = json.load(fp)["end_user_data_statement"]
 
 
-def setup(bot):
-    cog = WarnTransfer(bot)
-    bot.add_cog(cog)
+async def setup(bot):
+    await bot.add_cog(WarnTransfer(bot))
