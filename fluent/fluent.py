@@ -1,8 +1,10 @@
 import discord
 import googletrans
+import logging
 from redbot.core import commands, Config
 
 translator = googletrans.Translator()
+log = logging.getLogger("red.vrt.fluent")
 
 
 class Fluent(commands.Cog):
@@ -12,7 +14,7 @@ class Fluent(commands.Cog):
     Inspired by Obi-Wan3#0003's translation cog.
     """
     __author__ = "Vertyco"
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
 
     def format_help_for_context(self, ctx):
         helpcmd = super().format_help_for_context(ctx)
@@ -40,11 +42,16 @@ class Fluent(commands.Cog):
 
     @staticmethod
     async def translator(msg, dest):
-        translated_msg = translator.translate(msg, dest=str(dest))
+        try:
+            translated_msg = translator.translate(msg, dest=str(dest))
+        except Exception as e:
+            log.warning(f"Translator failed: {e}")
+            return None
         return translated_msg
 
     @commands.group()
     @commands.mod()
+    @commands.guild_only()
     async def fluent(self, ctx):
         """Base command"""
         pass
@@ -115,6 +122,10 @@ class Fluent(commands.Cog):
             return
         if not message.guild:
             return
+        if not message.content:
+            return
+        if not message.channel:
+            return
         channels = await self.config.guild(message.guild).channels()
         channel_id = str(message.channel.id)
         if channel_id not in channels:
@@ -123,7 +134,7 @@ class Fluent(commands.Cog):
         lang2 = channels[channel_id]["lang2"]
         channel = message.channel
         trans = await self.translator(message.content, lang1)
-        if trans is None:
+        if not trans:
             await channel.send(embed=discord.Embed(description=f"❌ API seems to be down at the moment."))
         elif trans.src == lang2:
             embed = discord.Embed(
