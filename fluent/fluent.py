@@ -71,11 +71,11 @@ class Fluent(commands.Cog):
         if not language1 or not language2:
             return await ctx.send(f"One of the languages were not found: lang1-{language1} lang2-{language2}")
         async with self.config.guild(ctx.guild).channels() as channels:
-            if channel.id in channels.keys():
+            if str(channel.id) in channels:
                 return await ctx.send(
                     embed=discord.Embed(description=f"❌ {channel.mention} is already a fluent channel."))
             else:
-                channels[channel.id] = {
+                channels[str(channel.id)] = {
                     "lang1": language1,
                     "lang2": language2
                 }
@@ -105,6 +105,7 @@ class Fluent(commands.Cog):
             title="Fluent Settings",
             description="Below is a list of fluent channels and their translated languages."
         )
+        cleanup = []
         for channel in channels:
             discordchannel = ctx.guild.get_channel(int(channel))
             if discordchannel:
@@ -114,6 +115,13 @@ class Fluent(commands.Cog):
                     name=discordchannel.name,
                     value=f"Channel ID: {discordchannel.id}\nFluent in: {lang1} <-> {lang2}"
                 )
+            else:
+                cleanup.append(channel)
+        if cleanup:
+            async with self.config.guild(ctx.guild).channels() as channels:
+                for cid in cleanup:
+                    del channels[cid]
+            await ctx.send(f"{len(cleanup)} channels that no longer exist were cleaned from the config.")
         return await ctx.send(embed=embed)
 
     @commands.Cog.listener("on_message")
