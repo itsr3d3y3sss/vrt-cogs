@@ -57,6 +57,7 @@ class UserCommands(commands.Cog):
                 log.warning(f"background set failed: {e}")
                 await ctx.send("Uh Oh, looks like that is not a valid image")
                 return
+
         return True
 
     # Hacky way to get user banner
