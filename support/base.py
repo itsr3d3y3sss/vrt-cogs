@@ -120,7 +120,7 @@ class BaseCommands(commands.Cog):
                         f"`Closed on: `{closed}\n"
                         f"`Closed by: `{ctx.author.name}\n"
                         f"`Reason:    `{reason}\n",
-            color=discord.Color.green()
+            color=discord.Colour.dark_theme()
         )
         embed.set_thumbnail(url=pfp)
         async with self.config.guild(ctx.guild).opened() as tickets:
@@ -131,7 +131,7 @@ class BaseCommands(commands.Cog):
         if transcript:
             tr = discord.Embed(
                 description="Archiving channel...",
-                color=discord.Color.magenta()
+                color=discord.Colour.dark_theme()
             )
             tr.set_footer(text="This channel will be deleted once complete")
             tr.set_thumbnail(url=LOADING)
