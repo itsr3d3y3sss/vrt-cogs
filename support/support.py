@@ -320,7 +320,7 @@ class Support(BaseCommands, SupportCommands, commands.Cog):
                         title="Ticket Opened",
                         description=f"Ticket created by **{user.name}-{user.id}** has been opened\n"
                                     f"To view this ticket, **[Click Here]({msg.jump_url})**",
-                        color=discord.Color.red()
+                        color=discord.Colour.dark_theme()
                     )
                     embed.set_thumbnail(url=pfp)
                     log_msg = await log_channel.send(embed=embed)
@@ -356,7 +356,7 @@ class Support(BaseCommands, SupportCommands, commands.Cog):
                             f"`Closed on: `{closed}\n"
                             f"`Closed by: `{self.bot.user.name}\n"
                             f"`Reason:    `User left guild(Auto-Close)\n",
-                color=discord.Color.green()
+                color=discord.Colour.dark_theme()
             )
             embed.set_thumbnail(url=pfp)
             chan = self.bot.get_channel(int(cid))
