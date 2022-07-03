@@ -7,7 +7,7 @@ from redbot.core import commands
 from redbot.core.utils.mod import is_admin_or_superior
 from redbot.core.i18n import Translator
 
-LOADING = "https://i.imgur.com/l3p6EMX.gif"
+LOADING = "https://imgur.com/RuKxdF8"
 log = logging.getLogger("red.vrt.support.base")
 _ = Translator("Support", __file__)
 
